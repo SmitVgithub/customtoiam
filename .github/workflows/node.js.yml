@@ -1,29 +1,28 @@
-name: Deploy to EC2
+name: Node.js CI
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm install
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-      - name: Build
-        run: npm run build
+    - name: Install dependencies
+      run: npm install
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.ip-172-31-85-39 }}
-          username: ${{ secrets.ubuntu }}
-          script: |
-            sudo rm -rf /var/www/html/*
-            sudo cp -r build/* /var/www/html/
+    - name: Run tests
+      run: npm test
