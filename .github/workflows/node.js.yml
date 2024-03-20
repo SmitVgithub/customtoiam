@@ -1,32 +1,31 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Deploy to EC2
+name: Node.js CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-  deploy:
+  build:
     runs-on: self-hosted
 
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+        # Specify the exact Node.js versions you want to test against
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: npm install
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Build
-      run: npm run build
+      - run: npm ci
 
-    - name: Deploy to EC2
-      uses: easingthemes/ssh-deploy@v2
-      with:
-        server_ip: ${{ secrets.44.203.95.161 }}
-        server_username: ${{ secrets.i-01439bc3d9402868d }}
-        local_path: 'build'
-        remote_path: '/var/www/html'
+      - run: npm run build
 
