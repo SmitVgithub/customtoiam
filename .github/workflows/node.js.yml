@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
@@ -27,7 +27,6 @@ jobs:
       with:
         server_ip: ${{ secrets.44.203.95.161 }}
         server_username: ${{ secrets.i-01439bc3d9402868d }}
-        server_key: ${{ secrets.172.31.87.65 }}
         local_path: 'build'
         remote_path: '/var/www/html'
 
