@@ -1,20 +1,17 @@
-# Use an official Python runtime as a parent image 
-FROM python:3.11
+# Use the official Python image as base
+FROM python:3.8-alpine
 
-# Set the working directory in the container 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app 
-COPY . /app
+# Copy the Flask application files into the container
+COPY . .
 
-# Install Flask and Flask-CORS 
-RUN pip install --no-cache-dir flask flask-cors
+# Install any dependencies specified in requirements.txt, including gunicorn
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-# Make port 5000 available to the world outside this container 
+# Expose the port on which the Flask app will run
 EXPOSE 5000
 
-# Define environment variable 
-ENV FLASK_APP=app.py
-
-# Run app.py when the container launches 
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Command to run the Flask application using Gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "server:app"]
